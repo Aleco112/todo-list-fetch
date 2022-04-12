@@ -6,9 +6,22 @@ import React, { useEffect, useState } from "react";
 const Home = () => {
 	const [listname, setListName] = useState("");
 	const [todolist, setTodoList] = useState([]);
-	useEffect(() => {
+	const getTodos = () => {
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/Aleco112")
+			.then((response) => response.json())
+			.then((result) => setTodoList(result))
+			.catch((error) => console.log("error", error));
+	};
+	const addTodo = (item) => {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+
+		var raw = JSON.stringify([...todolist, { label: item, done: false }]);
+
 		var requestOptions = {
-			method: "GET",
+			method: "PUT",
+			headers: myHeaders,
+			body: raw,
 			redirect: "follow",
 		};
 
@@ -16,62 +29,71 @@ const Home = () => {
 			"https://assets.breatheco.de/apis/fake/todos/user/Aleco112",
 			requestOptions
 		)
-			.then((response) => response.json())
-			.then((result) => setTodoList(result))
+			.then((response) => (response.status === 200 ? getTodos() : ""))
 			.catch((error) => console.log("error", error));
+	};
+	const deleteTodo = () => {};
+	const completeTodo = () => {};
+
+	useEffect(() => {
+		getTodos();
 	}, []);
 	console.log(todolist);
 
 	return (
 		<>
-			<div className="input-group">
-				<input
-					type="text"
-					className="form-control"
-					placeholder="Todo-list"
-					onChange={(event) => {
-						setListName(event.target.value);
-					}}
-					value={listname}
-					onKeyUp={(e) => {
-						if (e.key == "Enter" && listname !== "") {
-							setTodoList([...todolist, listname]);
-							setListName("");
-						}
-					}}
-				/>
-				<button
-					onClick={() => {
-						//check is input is empty
-						if (listname !== "") {
-							setTodoList([...todolist, listname]);
-							setListName("");
-						}
-					}}
-					className="btn btn-outline-secondary"
-					type="button">
-					Add task
-				</button>
-			</div>
-			<ul>
-				{todolist.map((item, index) => {
-					return (
-						<li key={index}>
-							{item.label}
-							<button
-								onClick={() =>
-									setTodoList(
-										todolist.filter((item, i) => {
-											return index !== i;
-										})
-									)
-								}>
-								X
-							</button>
-						</li>
-					);
-				})}
-			</ul>
+			<main>
+				<h1> Todos</h1>
+				<div className="input-group">
+					<input
+						type="text"
+						className="form-control"
+						placeholder="Todo-list"
+						onChange={(event) => {
+							setListName(event.target.value);
+						}}
+						value={listname}
+						onKeyUp={(e) => {
+							if (e.key == "Enter" && listname !== "") {
+								addTodo(listname);
+								setListName("");
+							}
+						}}
+					/>
+					<button
+						onClick={() => {
+							//check is input is empty
+							if (listname !== "") {
+								addTodo(listname);
+								setListName("");
+							}
+						}}
+						className="btn btn-outline-secondary"
+						type="button">
+						Add task
+					</button>
+				</div>
+				<ul>
+					{todolist.map((item, index) => {
+						return (
+							<li className="newtodos" key={index}>
+								{item.label}
+								<button
+									onClick={() =>
+										setTodoList(
+											todolist.filter((item, i) => {
+												return index !== i;
+											})
+										)
+									}>
+									X
+								</button>
+							</li>
+						);
+					})}
+				</ul>
+			</main>
+			<span>{todolist.length} item left</span>
 		</>
 	);
 };

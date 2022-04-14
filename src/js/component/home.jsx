@@ -32,7 +32,25 @@ const Home = () => {
 			.then((response) => (response.status === 200 ? getTodos() : ""))
 			.catch((error) => console.log("error", error));
 	};
-	const deleteTodo = () => {};
+	const deleteTodo = (newList) => {
+		var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify(newList);
+
+var requestOptions = {
+  method: 'PUT',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("https://assets.breatheco.de/apis/fake/todos/user/Aleco112", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+
+	};
 	const completeTodo = () => {};
 
 	useEffect(() => {
@@ -80,7 +98,7 @@ const Home = () => {
 								{item.label}
 								<button
 									onClick={() =>
-										setTodoList(
+										deleteTodo(
 											todolist.filter((item, i) => {
 												return index !== i;
 											})

@@ -34,22 +34,25 @@ const Home = () => {
 	};
 	const deleteTodo = (newList) => {
 		var myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
+		myHeaders.append("Content-Type", "application/json");
 
-var raw = JSON.stringify(newList);
+		var raw = JSON.stringify(newList);
 
-var requestOptions = {
-  method: 'PUT',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
+		var requestOptions = {
+			method: "PUT",
+			headers: myHeaders,
+			body: raw,
+			redirect: "follow",
+		};
 
-fetch("https://assets.breatheco.de/apis/fake/todos/user/Aleco112", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result))
-  .catch(error => console.log('error', error));
-
+		fetch(
+			"https://assets.breatheco.de/apis/fake/todos/user/Aleco112",
+			requestOptions
+		)
+			.then((response) =>
+				response.status === 200 ? setTodoList(newList) : ""
+			)
+			.catch((error) => console.log("error", error));
 	};
 	const completeTodo = () => {};
 
